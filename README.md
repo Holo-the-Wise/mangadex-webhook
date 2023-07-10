@@ -1,8 +1,16 @@
 # Updated MangaDex discord webhook with Google Script
-Inspired [GuilhermeFaga's version](https://github.com/GuilhermeFaga/MangaDex-discord-webhook-with-Google-Script/) but implemented in MangaDex's v5 API.
+Forked from [vv4t's version](https://github.com/vv4t/mangadex-webhook) which itself is inspired [GuilhermeFaga's version](https://github.com/GuilhermeFaga/MangaDex-discord-webhook-with-Google-Script/) but implemented in MangaDex's v5 API.
 
 A simple `Google Script` to which can be set up in a few minutes (no downloads required). This allows for automatic chapter updates from MangaDex to be forwarded to Discord via Webhooks.
 
+This fork:
+
++ Eliminates the need for a Mangadex account
++ Makes it easy to have one channel for each seperate manga (requires individual webhooks
+
+- Cannot be synced to a users follow feed
+- Does not allow for the same manga update to be sent to multiple channels
+ 
 The output in Discord:
 
 ![Example](https://i.imgur.com/7vcPLyU.png)
@@ -10,22 +18,13 @@ The output in Discord:
 
 # Installation
 ## Prerequisites
-- MangaDex Account
 - Google Account
 
 ## Steps
-### Creating an MDList
-- Log into your account and create a **public** [MDList](https://mangadex.org/create/list)
-
-![MDList](https://i.imgur.com/TjE5SXW.png)
-
-
-- Add manga to be tracked to the list through the `Add to MDList` on the manga page
-
-![Add to MDList](https://i.imgur.com/6Hr2Ui2.png)
 
 ### Creating a Google Sheets
 
+- Use sample
 - Create a [Google Sheets](https://sheets.new/)
 - Create three sheets `feeds` and `webhooks` and `accounts` (Case sensitive)
 
@@ -57,18 +56,7 @@ The output in Discord:
 
 ![settings](https://i.imgur.com/kp31kas.png)
 
-## Account Integration
-- You can link it with your account's following feed
-- However you will need to get your account's access token
 
-### Access Token
-**USE AT YOUR OWN DISCRETION**
-- Make a new script called `access_token.gs`
-- Paste in [`access_token.gs`](./access_token.gs)
-- Input `username` and `password` for MangaDex
-- Run the script
-- Your token will be output in the console
-- Remove your credentials from the script file
 
 ![token](https://i.imgur.com/7JDblWm.png)
 
