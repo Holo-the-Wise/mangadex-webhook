@@ -5,37 +5,29 @@ const API_URL = "https://api.mangadex.org";
 const LANGUAGE = "en";
 
 function main() {
-  const webhooks = get_array_from_sheets("webhooks", columns = 2);
-  const feeds = get_array_from_sheets("feeds", columns = 1).map(x => x[0]);
-  const refresh_tokens = get_array_from_sheets("accounts", columns = 1).map(x => x[0]);
+  const data = get_array_from_sheets("feeds", columns = 5);
 
-  const updates = [];
 
-  for (const refresh_token of refresh_tokens) {
-    const access_token = refresh_session(refresh_token);
+  for ( const manga of data) 
+  {
+    enabled = manga[0]
+    manga_id = manga[1]
+    manga_name = manga[2]
+    manga_title = manga[3]
+    manga_webhook = manga[4]
+    manga_payload_message = manga[5]
 
-    if (access_token) {
-      const follow_updates = check_follow_feed_updates(access_token);
-      updates.push(...follow_updates);
-    } else {
-      console.log("failed to log into", refresh_token);
+    if (enabled){
+
+    Logger.log(manga)
+    const updates = check_updates(manga_id);   
+    Logger.log(updates)
+    
+    //post_updates(manga_webhook, updates, manga_payload_message);
     }
   }
 
-  const custom_updates = check_custom_feed_updates(feeds);
-  updates.push(...custom_updates);
-
-  const unique_updates = updates.filter((x, i) => {
-    for (let j = i + 1; j < updates.length; j++) {
-      if (x.id == updates[j].id)
-        return false;
-    }
-    
-    return true;
-  });
-
-  for (const [webhook, message] of webhooks)
-    post_updates(webhook, unique_updates, message);
+  
 }
 
 function post_updates(webhook, updates, message = "")
@@ -82,51 +74,20 @@ function post_updates(webhook, updates, message = "")
   }
 }
 
-function refresh_session(refresh_token)
-{
-  const login_endpoint = API_URL + "/auth/refresh";
-  const credentials = { "token": refresh_token };
 
-  const login_request = request(login_endpoint, "POST", credentials);
-
-  if (login_request != null) {
-    return login_request.token.session;
-  } else {
-    return null;
-  }
-}
-
-function check_follow_feed_updates(access_token)
-{
-  const previous_check = new Date(Date.now() - TRIGGER_INTERVAL * 60000);
-  const str_previous_check = previous_check.toISOString().substring(0, previous_check.toISOString().indexOf('.'));
-  
-  const feed_parameters = "?translatedLanguage[]=" + LANGUAGE + "&createdAtSince=" + str_previous_check;
-  const feed_url = API_URL + "/user/follows/manga/feed" + feed_parameters;
-
-  const feed = request(feed_url, "GET", null, true, access_token);
-
-  if (feed)
-    return feed.data;
-  else
-    return [];
-}
-
-function check_custom_feed_updates(feed_ids)
+function check_updates(manga)
 {
   const updates = [];
-  for (const feed_id of feed_ids) {
-    const previous_check = new Date(Date.now() - TRIGGER_INTERVAL * 60000);
-    const str_previous_check = previous_check.toISOString().substring(0, previous_check.toISOString().indexOf('.'));
-    
-    const feed_parameters = "?translatedLanguage[]=" + LANGUAGE + "&createdAtSince=" + str_previous_check;
-    const feed_url = API_URL + "/list/" + feed_id + "/feed" + feed_parameters;
-    
-    const feed = request(feed_url);
+  const previous_check = new Date(Date.now() - TRIGGER_INTERVAL * 60000);
+  const str_previous_check = previous_check.toISOString().substring(0, previous_check.toISOString().indexOf('.'));
 
-    if (feed)
-      updates.push(...feed.data);
-  }
+  const feed_parameters = "?translatedLanguage[]=" + LANGUAGE + "&createdAtSince=" + str_previous_check;
+  const feed_url = API_URL + "/manga/" + manga + "/feed" + feed_parameters;
+    
+  const feed = request(feed_url);
+
+  if (feed)
+    updates.push(...feed.data);
 
   return updates;
 }
