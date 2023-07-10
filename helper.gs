@@ -47,7 +47,8 @@ function get_array_from_sheets(sheet_name, columns = 0) {
     if (columns == 0)
       columns = ss.getLastColumn();
     
-    values = ss.getRange(1, 1, ss.getLastRow(), columns).getValues();
+    //to escape header row
+    values = ss.getRange(2, 1, ss.getLastRow()-1, columns).getValues();
   } catch (e) {
     return [];  
   }
